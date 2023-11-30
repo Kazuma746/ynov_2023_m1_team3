@@ -1,0 +1,11 @@
+{
+  "name": "ynov_2023_m1_team3",
+  "version": "1.0.0",
+  "description": "MyApp de la team3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
