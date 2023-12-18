@@ -3,8 +3,33 @@ const cors = require('cors');
 const errorHandler = require('./middlewares/errorsHandling');
 const config = require('./config');
 const routes = require('./routes');
+const nodemailer = require('nodemailer');
+const emailRoutes = require('./emailRoutes');
 
 const app = express();
+
+// Configuration de Nodemailer
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',  // Serveur SMTP de Gmail
+    port: 587,
+    secure: false,  
+    auth: {
+        user: 'mystoreynov@gmail.com',  
+        pass: 'bkdjfkdfzuagoadl', 
+    },
+    logger: true,
+    debug: true,
+});
+
+app.post('/api/send-email', async (req, res) => {
+    try {
+        // Logique d'envoi d'e-mail ici
+        res.status(200).send('E-mail envoyé avec succès!');
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'e-mail', error);
+        res.status(500).send('Erreur lors de l\'envoi de l\'e-mail');
+    }
+});
 
 // parse json request body
 app.use(express.json());

@@ -9,9 +9,9 @@ import ProductFancyBox from "@/components/products/ProductFancyBox";
 import Loader from "@/components/UI/Loader";
 import Alert from "@/components/UI/Alert";
 import { getBase64 } from '../../../lib/base64';
+import './FormulairePopin.css';
 
 export default function Page() {
-
     const { id } = useParams();
     const [selectedImage, setSelectedImage] = useState(null);
     const [placehodlerImage, setPlaceholderImage] = useState(null);
@@ -20,6 +20,95 @@ export default function Page() {
     const [slideIndex, setSlideIndex] = useState(0);
     const [showFancyBox, setShowFancyBox] = useState(false);
     const [error, setError] = useState(null);
+
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        nom:"",
+        prenom:"",
+        email:"",
+    })
+
+    const handleInterestedClick = async () => {
+        console.log("Je suis intéressé !");
+        openForm();
+    };
+
+
+    const openForm = () => {
+        setIsFormOpen(true);
+    }
+
+    const closeForm = () => {
+        setIsFormOpen(false);
+    }
+
+    const handleSubmit = async () => {
+        try {
+            console.log('Envoi du formulaire en cours...', formData);
+            // Envoi des données du formulaire à l'API
+            const response = await fetch('http://localhost:3000/api/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+    
+            if (response.ok) {
+                console.log('E-mail envoyé avec succès!');
+            } else {
+                console.error('Erreur lors de l\'envoi de l\'e-mail caramba- Statut:', response.status);
+                const errorText = await response.text();
+                console.error('Message d\'erreur:', errorText);
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi de l\'e-mail', error);
+        }
+    
+        console.log("Formulaire soumis avec succès :", formData);
+        setFormData({
+            nom: "",
+            prenom: "",
+            email: "",
+        });
+        closeForm();
+    };
+    
+
+    const FormulairePopin = (
+        <div className="popin">
+            <form>
+                <label>Nom:</label>
+                <input
+                    type="text"
+                    value={formData.nom}
+                    onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
+                />
+
+                <label>Prénom:</label>
+                <input
+                    type="text"
+                    value={formData.prenom}
+                    onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
+                />
+
+                <label>Email:</label>
+                <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+
+                <button type="button" onClick={handleSubmit}>
+                    Valider
+                </button>
+            </form>
+
+            <button className="close-button" onClick={closeForm}>
+                <span>&times;</span>
+            </button>
+        </div>
+    );
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -67,26 +156,20 @@ export default function Page() {
 
     return (
         <div className="container mx-auto py-12">
-            {
-                error && (
-                    <Alert message={error.message} type="error" />
-                )
-            }
-            {
-                !product && (
-                    <Alert message="No products found" type="error" />
-                )
-            }
-            {
-                showFancyBox && (
-                    <ProductFancyBox
-                        img={selectedImage}
-                        prevSlide={() => goToPrevSlide()}
-                        nextSlide={() => goToNextSlide()}
-                        close={() => { setShowFancyBox(false) }}
-                    />
-                )
-            }
+            {error && (
+                <Alert message={error.message} type="error" />
+            )}
+            {!product && (
+                <Alert message="No products found" type="error" />
+            )}
+            {showFancyBox && (
+                <ProductFancyBox
+                    img={selectedImage}
+                    prevSlide={() => goToPrevSlide()}
+                    nextSlide={() => goToNextSlide()}
+                    close={() => { setShowFancyBox(false) }}
+                />
+            )}
             <BreadCrumb current_page={product?.name} />
             <div className="flex">
                 <div className="thumbnail lg:flex-1">
@@ -143,6 +226,18 @@ export default function Page() {
                     <TitlePage title={product.name} />
                     <p className="mb-3 font-semibold text-lg">{product.price} €</p>
                     <p className="leading-7">{product.description}</p>
+
+                    <button
+                        className="bg-blue-500 text-white py-2 px-4 mt-4 rounded cursor-pointer"
+                        onClick={() => {
+                            handleInterestedClick();
+                            openForm();
+                        }}
+                    >
+                        Je suis intéressé
+                    </button>
+
+                    {isFormOpen && FormulairePopin}
                 </div>
             </div>
         </div>
