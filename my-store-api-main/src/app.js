@@ -4,7 +4,7 @@ const errorHandler = require('./middlewares/errorsHandling');
 const config = require('./config');
 const routes = require('./routes');
 const nodemailer = require('nodemailer');
-const emailRoutes = require('./emailRoutes');
+//const emailRoutes = require('./emailRoutes');
 
 const app = express();
 
@@ -23,10 +23,28 @@ const transporter = nodemailer.createTransport({
 
 app.post('/api/send-email', async (req, res) => {
     try {
-        // Logique d'envoi d'e-mail ici
+
+        console.log(req.body);
+
+        const { to, subject, text } = req.body;
+
+        if (!to || !subject || !text) {
+            return res.status(400).send('Les champs to, subject et text sont requis.');
+        }
+
+        const mailOptions = {
+            from: 'mystoreynov@gmail.com', 
+            to: to,
+            subject: subject,
+            text: text,
+        };
+
+        const result = await transporter.sendMail(mailOptions);
+        console.log('E-mail envoyé: %s', result.messageId);
+
         res.status(200).send('E-mail envoyé avec succès!');
     } catch (error) {
-        console.error('Erreur lors de l\'envoi de l\'e-mail', error);
+        console.log('Erreur lors de l\'envoi de l\'e-mail', error);
         res.status(500).send('Erreur lors de l\'envoi de l\'e-mail');
     }
 });

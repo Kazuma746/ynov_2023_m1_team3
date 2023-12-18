@@ -46,8 +46,9 @@ export default function Page() {
         try {
             console.log('Envoi du formulaire en cours...', formData);
             // Envoi des données du formulaire à l'API
-            const response = await fetch('http://localhost:3000/api/send-email', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/send-email`, {
                 method: 'POST',
+                Origin: `${process.env.NEXT_PUBLIC_API_ENDPOINT}`,
                 headers: {
                     'Content-Type': 'application/json',
                 },
