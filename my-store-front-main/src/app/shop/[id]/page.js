@@ -44,6 +44,15 @@ export default function Page() {
 
     const handleSubmit = async () => {
         try {
+            const email = formData.email
+            const prenom = formData.prenom
+            const nom = formData.nom
+            const mail = {
+                "to": email,
+                "subject": "Merci de votre intérêt !",
+                "text": `Bonjour ${prenom}, merci d'etre intéréssé par notre article : ${product.nom}`
+              }
+
             console.log('Envoi du formulaire en cours...', formData);
             // Envoi des données du formulaire à l'API
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/send-email`, {
@@ -52,7 +61,7 @@ export default function Page() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(mail),
             });
     
             if (response.ok) {
@@ -74,7 +83,6 @@ export default function Page() {
         });
         closeForm();
     };
-    
 
     const FormulairePopin = (
         <div className="popin">

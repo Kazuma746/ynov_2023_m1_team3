@@ -21,6 +21,30 @@ const transporter = nodemailer.createTransport({
     debug: true,
 });
 
+
+// parse json request body
+app.use(express.json());
+
+// parse urlencoded request body
+app.use(express.urlencoded({ extended: true }));
+
+// cors
+app.use(
+    cors(
+        {
+            origin: config.frontend_url,
+        },
+    ),
+);
+
+//access to public folder
+app.use(express.static(__dirname + '/public'));
+
+// initial route
+app.get('/', (req, res) => {
+    res.send({ message: 'Welcome to app-store-api application.' });
+});
+
 app.post('/api/send-email', async (req, res) => {
     try {
 
@@ -47,29 +71,6 @@ app.post('/api/send-email', async (req, res) => {
         console.log('Erreur lors de l\'envoi de l\'e-mail', error);
         res.status(500).send('Erreur lors de l\'envoi de l\'e-mail');
     }
-});
-
-// parse json request body
-app.use(express.json());
-
-// parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
-
-// cors
-app.use(
-    cors(
-        {
-            origin: config.frontend_url,
-        },
-    ),
-);
-
-//access to public folder
-app.use(express.static(__dirname + '/public'));
-
-// initial route
-app.get('/', (req, res) => {
-    res.send({ message: 'Welcome to app-store-api application.' });
 });
 
 // api routes prefix
